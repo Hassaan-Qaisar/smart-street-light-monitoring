@@ -1,9 +1,9 @@
 #define BLYNK_PRINT Serial
 
 /* Fill in information from Blynk Device Info here */
-#define BLYNK_TEMPLATE_ID "TMPL6piYKAScQ"
-#define BLYNK_TEMPLATE_NAME "street monitoring"
-#define BLYNK_AUTH_TOKEN "onifSI2QtJbps1tQoEXwPKjB-oISRswb"
+#define BLYNK_TEMPLATE_ID ""
+#define BLYNK_TEMPLATE_NAME ""
+#define BLYNK_AUTH_TOKEN ""
 
 /* here is the All necessery library*/
 #include <WiFi.h>
@@ -104,6 +104,60 @@ void loop() {
       lcd.print(map(a, 32, 4058, 100, 0));          //display the sensor percentage
       lcd.print("%    ");                              //display the unite of the sensor
     }
-  }  
-   // this speeds up the simulation
+  }
+  while (mode_st == false) {
+
+    int c = digitalRead(2);   //taking reading from button 1
+    int d = digitalRead(23);  //taking reading from button 2
+    lcd.setCursor(0, 0);      //position of the text on display
+    lcd.print("Manually:       ");
+    if (c == 0) {
+      st = !st;
+      Blynk.virtualWrite(V4, st);
+      delay(10);
+    }
+    if (d == 0) {
+      st_1 = !st_1;
+      Blynk.virtualWrite(V5, st_1);
+      delay(10);
+    }
+
+    if (digitalRead(15) == 0 && mode_st==false) {
+      lcd.setCursor(0, 0);
+      lcd.print("Automatic Mode");
+      lcd.setCursor(0, 1);  //position of the text on display
+      lcd.print("                 ");
+      mode_st = true;
+      delay(100);
+      break;
+    }
+    if (st) {
+      lcd.setCursor(0, 1);  //position of the text on display
+      lcd.print("LED1 ON ");
+      analogWrite(12, 255);
+      Blynk.virtualWrite(V1, 255);
+    }
+
+    else {
+      lcd.setCursor(0, 1);  //position of the text on display
+      lcd.print("LED1 OFF");
+      analogWrite(12, 0);
+      Blynk.virtualWrite(V1, 0);
+    }
+    if (st_1) {
+      lcd.setCursor(8, 1);  //position of the text on display
+      lcd.print("LED2 ON ");
+      analogWrite(14, 255);
+      Blynk.virtualWrite(V3, 255);
+   
+    } else {
+      lcd.setCursor(8, 1);  //position of the text on display
+      lcd.print("LED2 OFF");
+      analogWrite(14, 0);
+      Blynk.virtualWrite(V3, 0);
+  
+    }
+  }
+  last_val = b;  //recorded the previous sensor data
+  delay(100);    // this speeds up the simulation
 }
